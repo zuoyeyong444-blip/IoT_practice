@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2年IoT基礎 - 確認問題50問 Webツール</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --success-color: #27ae60;
+            --border-color: #dcdde1;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+        }
+        header p {
+            margin: 0;
+            color: #bdc3c7;
+            font-size: 1.1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .instruction-box {
+            background: white;
+            border-left: 5px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        .question-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f1f2f6;
+            padding-bottom: 0.5rem;
+        }
+        .q-num {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+        .q-type {
+            background: #dfe6e9;
+            color: #2d3436;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1.2rem;
+        }
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            background: #fdfdfd;
+            border: 1px solid #dfe4ea;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            background: #f1f2f6;
+            border-color: var(--secondary-color);
+        }
+        .option-label input {
+            margin-right: 0.75srem;
+            accent-color: var(--secondary-color);
+        }
+        .text-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dfe4ea;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .text-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4f8;
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 4px;
+            display: none;
+            font-size: 0.95rem;
+        }
+        .explanation.show {
+            display: block;
+        }
+        .controls {
+            text-align: center;
+            margin: 3rem 0;
+        }
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        #score-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--success-color);
+            margin: 1rem 0;
+        }
+        .close-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        .result-correct {
+            border-left: 6px solid var(--success-color) !important;
+            background-color: #f4fbf7 !important;
+        }
+        .result-incorrect {
+            border-left: 6px solid var(--accent-color) !important;
+            background-color: #fdf6f6 !important;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>2年IoT基礎：確認問題50問</h1>
+    <p>2026年度前期シラバス対応 Interactive Web Quiz Tool</p>
+</header>
+
+<div class="container">
+    <form id="quiz-form">
+        <!-- 50 Questions will be injected here via python script or built-in -->
+
+        <div class="question-card" id="card-1">
+            <div class="q-header">
+                <span class="q-num">第 1 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTの一般的な定義である「モノのインターネット」の最も適切な説明はどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q1" value="0">
+                    <span>パソコン同士が高速な光回線で接続される技術</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q1" value="1">
+                    <span>さまざまな物（モノ）がインターネットを通じて情報交換を行う仕組み</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q1" value="2">
+                    <span>人間が介在して全てのセンサーデータを手動で入力するシステム</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q1" value="3">
+                    <span>インターネット上のサーバー容量を無限に拡張するクラウド技術</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-1">
+                <strong>【解説】</strong> IoT（Internet of Things）とは、従来は主にパソコンやスマホ等がつながっていたインターネットに、世の中の様々な「モノ」を接続し、相互に通信・制御する仕組みです。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-2">
+            <div class="q-header">
+                <span class="q-num">第 2 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTシステムにおいて、物理的な環境の変化（温度や光など）を電気信号や数値に変換するデバイスの総称はどれか。</div>
+    <div class="options-group" data-correct="2">
+
+                <label class="option-label">
+                    <input type="radio" name="q2" value="0">
+                    <span>アクチュエーター</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q2" value="1">
+                    <span>ゲートウェイ</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q2" value="2">
+                    <span>センサー</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q2" value="3">
+                    <span>ルーター</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-2">
+                <strong>【解説】</strong> センサーは温度、湿度、照度などの物理量を検出して電気信号に変換します。一方、アクチュエーターは電気信号を物理的動作に変換します。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-3">
+            <div class="q-header">
+                <span class="q-num">第 3 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">Micro:bitを使った演習において、プログラムの作成に主に使用されるビジュアルプログラミング環境はどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q3" value="0">
+                    <span>Visual Studio Code</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q3" value="1">
+                    <span>Microsoft MakeCode</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q3" value="2">
+                    <span>Arduino IDE</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q3" value="3">
+                    <span>Xcode</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-3">
+                <strong>【解説】</strong> Micro:bitの教育用プログラミングでは、ブロックを組み立てて直感的にコードを書ける「Microsoft MakeCode」が一般的に使用されます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-4">
+            <div class="q-header">
+                <span class="q-num">第 4 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTデバイスとクラウドサーバーの間を仲介し、データの集約やプロトコル変換を行う中継機器のことを何と呼ぶか。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q4" value="0">
+                    <span>ゲートウェイ</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q4" value="1">
+                    <span>スイッチングハブ</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q4" value="2">
+                    <span>リピータ</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q4" value="3">
+                    <span>ファイアウォール</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-4">
+                <strong>【解説】</strong> IoTゲートウェイは、センサーノードからのデータを集約し、上位のクラウドへ効率的かつ安全に転送・中継する役割を持ちます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-5">
+            <div class="q-header">
+                <span class="q-num">第 5 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTにおける「クラウドコンピューティング」の利点として、最も不適切なものはどれか。</div>
+    <div class="options-group" data-correct="2">
+
+                <label class="option-label">
+                    <input type="radio" name="q5" value="0">
+                    <span>インターネット経由で柔軟にリソースを拡張できる</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q5" value="1">
+                    <span>ハードウェアの保守管理や初期投資を軽減できる</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q5" value="2">
+                    <span>インターネット接続が完全に遮断された環境でもリアルタイムに常時クラウド同期ができる</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q5" value="3">
+                    <span>大量のセンサーデータを効率的に蓄積・分析できる</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-5">
+                <strong>【解説】</strong> クラウドはインターネット接続を前提としているため、ネットワークが遮断された環境ではクラウドとの同期や処理を行うことができません。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-6">
+            <div class="q-header">
+                <span class="q-num">第 6 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">スマートホームの事例として、家庭内で音声によって家電の操作や情報検索を行う機器を何と呼ぶか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q6" value="0">
+                    <span>スマートロック</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q6" value="1">
+                    <span>ホームアシスタント（スマートスピーカー）</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q6" value="2">
+                    <span>ロボット掃除機</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q6" value="3">
+                    <span>スマート照明</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-6">
+                <strong>【解説】</strong> ホームアシスタント（スマートスピーカー）は音声認識を用いて家庭内のIoT機器を制御したり、ニュースや天気を読み上げたりします。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-7">
+            <div class="q-header">
+                <span class="q-num">第 7 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">ヘルスケア分野におけるIoT活用例として、日常生活の歩数や心拍数を常時測定するデバイスはどれか。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q7" value="0">
+                    <span>ウェアラブルデバイス</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q7" value="1">
+                    <span>自動運転用LiDAR</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q7" value="2">
+                    <span>スマートメーター</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q7" value="3">
+                    <span>POS端末</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-7">
+                <strong>【解説】</strong> スマートウォッチや活動量計などのウェアラブルデバイスは、装着者のバイタルデータを継続的に収集し健康管理に役立ちます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-8">
+            <div class="q-header">
+                <span class="q-num">第 8 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">自動運転車において、周辺の障害物や歩行者との距離を測定するために使用される代表的なセンサー技術はどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q8" value="0">
+                    <span>サーモグラフィーのみ</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q8" value="1">
+                    <span>LiDAR（ライダー）やミリ波レーダー</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q8" value="2">
+                    <span>水道メーター</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q8" value="3">
+                    <span>気圧センサー</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-8">
+                <strong>【解説】</strong> 自動運転では、周囲の立体物や距離を正確に把握するため、LiDARやミリ波レーダー、カメラなどが複合的に利用されます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-9">
+            <div class="q-header">
+                <span class="q-num">第 9 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">スマートシティにおける主な目的として、最も適切なものはどれか。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q9" value="0">
+                    <span>都市部の交通渋滞緩和、エネルギー効率の最適化、住民サービスの向上</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q9" value="1">
+                    <span>地方の農業における耕作放棄地の完全放置</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q9" value="2">
+                    <span>すべての家庭におけるアナログテレビの継続利用</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q9" value="3">
+                    <span>自動車の最高速度を無制限に引き上げるインフラ整備</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-9">
+                <strong>【解説】</strong> スマートシティはICTやIoTを活用して都市インフラ全体の最適化を図り、持続可能で快適な都市環境を実現することを目指します。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-10">
+            <div class="q-header">
+                <span class="q-num">第 10 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoT機器を狙ったサイバー攻撃において、多数のIoTデバイスを乗っ取って一斉にDDoS攻撃を行うボットネットの代表例として知られるものはどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q10" value="0">
+                    <span>WannaCry</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q10" value="1">
+                    <span>Mirai（ミライ）</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q10" value="2">
+                    <span>Stuxnet</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q10" value="3">
+                    <span>Petya</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-10">
+                <strong>【解説】</strong> 2016年に猛威を振るった「Mirai」は、初期設定パスワードのまま稼働していた多数のIoT機器を感染させ、巨大なDDoS攻撃を引き起こしました。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-11">
+            <div class="q-header">
+                <span class="q-num">第 11 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTにおけるプライバシー保護の観点から、収集されたデータに関して最も懸念される問題はどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q11" value="0">
+                    <span>デバイスの重量が重くなりすぎて持ち運べないこと</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q11" value="1">
+                    <span>個人の位置情報や行動履歴が本人の意図せず収集・プロファイリングされること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q11" value="2">
+                    <span>電気代が高騰すること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q11" value="3">
+                    <span>インターネットの帯域が余ること</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-11">
+                <strong>【解説】</strong> 位置情報やライフログなどのセンシティブなデータが収集・利用されることで、プライバシー侵害や個人の特定につながるリスクが生じます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-12">
+            <div class="q-header">
+                <span class="q-num">第 12 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">5G（第5世代移動通信システム）がIoTの発展に大きく寄与する理由として、正しくないものはどれか。</div>
+    <div class="options-group" data-correct="3">
+
+                <label class="option-label">
+                    <input type="radio" name="q12" value="0">
+                    <span>超高速・大容量通信が可能になる</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q12" value="1">
+                    <span>超信頼・低遅延通信（URLLC）が実現できる</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q12" value="2">
+                    <span>多数同時接続が可能になる</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q12" value="3">
+                    <span>すべてのIoTデバイスの価格が0円になる</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-12">
+                <strong>【解説】</strong> 5Gは通信規格であり、デバイスの価格が自動的に0円になるわけではありません。高速・低遅延・多数同時接続が特徴です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-13">
+            <div class="q-header">
+                <span class="q-num">第 13 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTエコシステムを構成する要素として、データの流れの順序として最も適切なものはどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q13" value="0">
+                    <span>クラウド → センサー → 人間</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q13" value="1">
+                    <span>センサー・アクチュエーター → ネットワーク・ゲートウェイ → クラウド・アプリケーション</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q13" value="2">
+                    <span>アプリケーション → センサー → ネットワーク</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q13" value="3">
+                    <span>電源 → 配線 → モニター</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-13">
+                <strong>【解説】</strong> センサーで取得したデータがネットワーク・ゲートウェイを介してクラウドに送られ、アプリで処理・可視化されるのが一般的なデータの流れです。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-14">
+            <div class="q-header">
+                <span class="q-num">第 14 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoT分野におけるキャリアパスや必要なスキルとして、一般的に求められないものはどれか。</div>
+    <div class="options-group" data-correct="3">
+
+                <label class="option-label">
+                    <input type="radio" name="q14" value="0">
+                    <span>ハードウェア（電子工作・センサー）の基礎知識</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q14" value="1">
+                    <span>ネットワークおよびセキュリティの知識</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q14" value="2">
+                    <span>クラウドサービスやプログラミングのスキル</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q14" value="3">
+                    <span>大型船舶の操縦免許や大型二輪の運転技術</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-14">
+                <strong>【解説】</strong> IoTエンジニアには組込みプログラミング、ネットワーク、クラウド、データ分析などの知識が求められますが、船舶や二輪の運転免許はIoTの専門必須スキルではありません。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-15">
+            <div class="q-header">
+                <span class="q-num">第 15 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTデバイスで広く利用される軽量な通信プロトコルであり、パブリッシュ/サブスクライブ型モデルを採用しているものはどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q15" value="0">
+                    <span>HTTP</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q15" value="1">
+                    <span>MQTT</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q15" value="2">
+                    <span>FTP</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q15" value="3">
+                    <span>SMTP</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-15">
+                <strong>【解説】</strong> MQTTは軽量でオーバヘッドが小さいため、リソースが限られたIoTデバイスや不安定なネットワーク環境で広く採用されています。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-16">
+            <div class="q-header">
+                <span class="q-num">第 16 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">LPWA（Low Power Wide Area）と呼ばれる無線通信技術の最大の特徴はどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q16" value="0">
+                    <span>超高精細な4K動画をリアルタイムで数千台同時にストリーミング配信できること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q16" value="1">
+                    <span>低消費電力で長距離の通信が可能なこと</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q16" value="2">
+                    <span>通信速度が世界最速であること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q16" value="3">
+                    <span>ケーブル接続が必須であること</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-16">
+                <strong>【解説】</strong> LPWAは、省電力で数キロ〜数十キロ先の遠隔地までデータを送信できるため、スマートメーターや農業センサー等に向いています。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-17">
+            <div class="q-header">
+                <span class="q-num">第 17 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTシステムのセキュリティ対策として、「セキュリティ・バイ・デザイン」が意味するものとして最も適切なものはどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q17" value="0">
+                    <span>製品が発売された後にセキュリティ対策を後付けで考えること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q17" value="1">
+                    <span>設計・開発の初期段階からセキュリティを組み込むこと</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q17" value="2">
+                    <span>デザイン性の高い美しい筐体を作ること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q17" value="3">
+                    <span>セキュリティソフトを一切導入しないこと</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-17">
+                <strong>【解説】</strong> セキュリティ・バイ・デザインは、システムや製品の企画・設計段階からセキュリティリスクを考慮し、対策を織り込む設計思想です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-18">
+            <div class="q-header">
+                <span class="q-num">第 18 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">エッジコンピューティングの説明として、最も適切なものはどれか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q18" value="0">
+                    <span>すべてのデータを必ず地球の裏側のデータセンターに送って処理すること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q18" value="1">
+                    <span>データ生成元のデバイスやエッジサーバーの近くでデータ処理や分析を行うこと</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q18" value="2">
+                    <span>インターネット回線を一切使わずに無線LANのみで通信すること</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q18" value="3">
+                    <span>画面の端っこ（エッジ）だけに文字を表示する技術</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-18">
+                <strong>【解説】</strong> エッジコンピューティングは、端末の近く（エッジ側）でデータ処理を行うことで、遅延の削減やネットワーク負荷の軽減を図る手法です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-19">
+            <div class="q-header">
+                <span class="q-num">第 19 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">IoTデバイスのファームウェア更新において、遠隔からネットワーク経由でソフトウェアを安全にアップデートする仕組みを何と呼ぶか。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q19" value="0">
+                    <span>OTA（Over-The-Air）アップデート</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q19" value="1">
+                    <span>デフラグメンテーション</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q19" value="2">
+                    <span>フォーマット</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q19" value="3">
+                    <span>BIOSリセット</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-19">
+                <strong>【解説】</strong> OTAアップデートにより、設置されたIoTデバイスのセキュリティパッチ適用や機能追加を遠隔から自動または手動で行うことができます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-20">
+            <div class="q-header">
+                <span class="q-num">第 20 問</span>
+                <span class="q-type">4択式</span>
+            </div>
+            <div class="q-text">センサーから得られたアナログ値を、コンピュータが処理できるデジタル値に変換する回路や機能を何と呼ぶか。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q20" value="0">
+                    <span>DAC（デジタル・アナログ変換器）</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q20" value="1">
+                    <span>ADC（アナログ・デジタル変換器）</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q20" value="2">
+                    <span>CPU</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q20" value="3">
+                    <span>GPU</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-20">
+                <strong>【解説】</strong> ADC（Analog-to-Digital Converter）は、温度や光などの連続的なアナログ信号をサンプリングしてデジタル値に変換します。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-21">
+            <div class="q-header">
+                <span class="q-num">第 21 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoTの導入により、製造業における予兆保検（故障する前に部品を交換する）や稼働状況の可視化が可能になる。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q21" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q21" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-21">
+                <strong>【解説】</strong> 正しいです。センサーで機械の状態を常時モニタリングすることで、故障の予兆を検知し、突発的な停止を防ぐ予兆保全（メンテナンス）が可能になります。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-22">
+            <div class="q-header">
+                <span class="q-num">第 22 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">Micro:bitには温度センサーや光センサーが標準で搭載されているため、外部パーツを追加しなくても数値の計測を体験できる。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q22" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q22" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-22">
+                <strong>【解説】</strong> 正しいです。Micro:bit本体には温度センサーや光センサー（LEDをセンサーとして流用）、加速度センサー、磁気センサーなどが内蔵されています。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-23">
+            <div class="q-header">
+                <span class="q-num">第 23 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoTデバイスは消費電力が大きければ大きいほど、電池駆動で数年間の長期間運用に適している。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q23" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q23" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-23">
+                <strong>【解説】</strong> 誤りです。長期間の電池駆動を実現するためには、省電力設計（低消費電力）が不可欠であり、消費電力が大きいとすぐに電池が切れてしまいます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-24">
+            <div class="q-header">
+                <span class="q-num">第 24 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">クラウドサービスを利用する際、ユーザーは物理的なサーバーの設置場所やハードウェアの故障交換を直接意識する必要がほとんどない。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q24" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q24" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-24">
+                <strong>【解説】</strong> 正しいです。クラウドはベンダー側がインフラの保守・管理を行うため、ユーザーはインフラの物理管理から解放されます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-25">
+            <div class="q-header">
+                <span class="q-num">第 25 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">スマートロックは、インターネットや近距離無線通信を介して、スマートフォンのアプリ等で鍵の施錠・解錠を行うIoT機器である。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q25" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q25" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-25">
+                <strong>【解説】</strong> 正しいです。スマートロックは住宅やオフィスの扉の鍵をデジタル制御し、遠隔操作や合鍵シェアリングを実現します。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-26">
+            <div class="q-header">
+                <span class="q-num">第 26 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">自動運転車において、通信機能（V2X：Vehicle-to-Everything）は他の車両や道路インフラと情報をやり取りするために全く不要である。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q26" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q26" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-26">
+                <strong>【解説】</strong> 誤りです。V2X（車車間通信・路車間通信）は、死角の危険や信号情報を共有し、交通事故を防止するために極めて重要な役割を果たします。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-27">
+            <div class="q-header">
+                <span class="q-num">第 27 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoTデバイスのパスワードを初期設定（デフォルト）のままにしておくと、外部からの不正アクセスのリスクが非常に高くなる。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q27" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q27" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-27">
+                <strong>【解説】</strong> 正しいです。初期パスワードはインターネット上に公開されていることが多く、変更しないと簡単に乗っ取られてしまいます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-28">
+            <div class="q-header">
+                <span class="q-num">第 28 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoTのプライバシー問題において、GPS機能等で取得される位置情報は、個人のプライバシー侵害につながるリスクを持つ。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q28" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q28" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-28">
+                <strong>【解説】</strong> 正しいです。位置情報は個人の行動パターンや生活圏を特定できるため、厳重な管理と同意が必要です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-29">
+            <div class="q-header">
+                <span class="q-num">第 29 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">エッジコンピューティングを使用すると、すべてのデータを一度も加工せずにクラウドへ送るため、ネットワークの帯域が無駄に消費される。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q29" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q29" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-29">
+                <strong>【解説】</strong> 誤りです。エッジ側で不要なデータをフィルタリングや集約してからクラウドに送信するため、ネットワーク帯域の負荷を軽減できます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-30">
+            <div class="q-header">
+                <span class="q-num">第 30 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoTエコシステムでは、単体のデバイス単独ですべてが完結しており、周辺機器や他のシステムと協力して動作することは想定されていない。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q30" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q30" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-30">
+                <strong>【解説】</strong> 誤りです。IoTエコシステムは、センサー、ネットワーク、クラウド、AI、アプリケーションなどの多様な要素が「協力して」動作する仕組みです。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-31">
+            <div class="q-header">
+                <span class="q-num">第 31 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">BLE（Bluetooth Low Energy）は、その名の通り省電力性に優れた近距離無線通信規格であり、ビーコンなどに広く利用されている。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q31" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q31" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-31">
+                <strong>【解説】</strong> 正しいです。BLEはコイン電池で数ヶ月〜数年駆動できる低消費電力が特徴で、ビーコンによる位置特定やウェアラブル機器に多用されています。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-32">
+            <div class="q-header">
+                <span class="q-num">第 32 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">アクチュエーターの具体例として、モーター、スピーカー、リレー、LEDなどが挙げられる。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q32" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q32" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-32">
+                <strong>【解説】</strong> 正しいです。これらは電気信号を物理的な運動、音、光などに変換するアクチュエーター（あるいは出力デバイス）の代表例です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-33">
+            <div class="q-header">
+                <span class="q-num">第 33 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoTの普及により便利になる一方で、サイバー攻撃を受けた際に社会インフラ（電力・水道・交通など）が停止するリスクが増大している。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q33" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q33" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-33">
+                <strong>【解説】</strong> 正しいです。インフラがIoT化（スマートグリッド等）されると、サイバー攻撃が物理社会へ直接的な甚大な被害を及ぼすリスクが高まります。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-34">
+            <div class="q-header">
+                <span class="q-num">第 34 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">データの送受信において、デバイス同士が通信を行う際、共通の通信規約（プロトコル）が異なっていても一切問題なく通信できる。</div>
+    <div class="options-group" data-correct="1">
+
+                <label class="option-label">
+                    <input type="radio" name="q34" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q34" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-34">
+                <strong>【解説】</strong> 誤りです。異なる言語（プロトコル）ではお互いに意味を理解できないため、通信には共通の規約や変換ゲートウェイが必要です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-35">
+            <div class="q-header">
+                <span class="q-num">第 35 問</span>
+                <span class="q-type">〇×</span>
+            </div>
+            <div class="q-text">IoT基礎の学習は、後期に予定されている実践的なデバイス制御やプログラミング演習の基礎力を養うことを目的としている。</div>
+    <div class="options-group" data-correct="0">
+
+                <label class="option-label">
+                    <input type="radio" name="q35" value="0">
+                    <span>〇 (正しい)</span>
+                </label>
+            
+                <label class="option-label">
+                    <input type="radio" name="q35" value="1">
+                    <span>× (誤り)</span>
+                </label>
+            </div>
+
+            <div class="explanation" id="exp-35">
+                <strong>【解説】</strong> 正しいです。シラバスの概要にも記載されている通り、前期で仕組みや社会での活用事例を学び、後期の実践演習へとつなげます。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-36">
+            <div class="q-header">
+                <span class="q-num">第 36 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">従来のインターネットが主にパソコンやサーバー等の情報機器をつないでいたのに対し、様々な「モノ」がインターネットにつながる仕組みの総称を何というか。</div>
+    
+            <div class="options-group" data-answer="IoT">
+                <input type="text" class="text-input" name="q36" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-36">
+                <strong>【解説】</strong> 正解は「IoT」（Internet of Things）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-37">
+            <div class="q-header">
+                <span class="q-num">第 37 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">温度、湿度、照度、加速度などの物理量を検出し、電気信号に変換する装置の名称を答えよ。</div>
+    
+            <div class="options-group" data-answer="センサー">
+                <input type="text" class="text-input" name="q37" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-37">
+                <strong>【解説】</strong> 正解は「センサー」（またはセンサ）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-38">
+            <div class="q-header">
+                <span class="q-num">第 38 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">センサーから得られた電気信号を受けて、モーターを回転させたり音を鳴らしたりする、物理的な動作を行う出力機器の総称を答えよ。</div>
+    
+            <div class="options-group" data-answer="アクチュエーター">
+                <input type="text" class="text-input" name="q38" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-38">
+                <strong>【解説】</strong> 正解は「アクチュエーター」（アクチュエータ）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-39">
+            <div class="q-header">
+                <span class="q-num">第 39 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">Micro:bitのプログラミングで主に使用される、ブロックを組み合わせてコードを作成するMicrosoftの教育用プラットフォームの名称を答えよ（英語またはカタカナ）。</div>
+    
+            <div class="options-group" data-answer="MakeCode">
+                <input type="text" class="text-input" name="q39" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-39">
+                <strong>【解説】</strong> 正解は「MakeCode」（メイクコード）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-40">
+            <div class="q-header">
+                <span class="q-num">第 40 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">IoTデバイスとクラウドの中間に位置し、データの集約やプロトコル変換を行う中継機器のことを「IoT○○○○○」という。空欄に入るカタカナを答えよ。</div>
+    
+            <div class="options-group" data-answer="ゲートウェイ">
+                <input type="text" class="text-input" name="q40" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-40">
+                <strong>【解説】</strong> 正解は「ゲートウェイ」です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-41">
+            <div class="q-header">
+                <span class="q-num">第 41 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">インターネット経由でデータ保存や処理機能を提供するシステムの総称で、日本語で「雲」を意味する言葉を答えよ。</div>
+    
+            <div class="options-group" data-answer="クラウド">
+                <input type="text" class="text-input" name="q41" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-41">
+                <strong>【解説】</strong> 正解は「クラウド」（Cloud）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-42">
+            <div class="q-header">
+                <span class="q-num">第 42 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">家庭内において、スマートロックやスマート照明、ロボット掃除機など、IoTによって快適化された住宅のことを「スマート○○○」という。空欄に入る言葉を答えよ。</div>
+    
+            <div class="options-group" data-answer="ホーム">
+                <input type="text" class="text-input" name="q42" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-42">
+                <strong>【解説】</strong> 正解は「ホーム」（スマートホーム）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-43">
+            <div class="q-header">
+                <span class="q-num">第 43 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">腕時計型やメガネ型など、身につけて健康管理やデータ収集を行うデバイスの総称を何というか答えよ。</div>
+    
+            <div class="options-group" data-answer="ウェアラブルデバイス">
+                <input type="text" class="text-input" name="q43" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-43">
+                <strong>【解説】</strong> 正解は「ウェアラブルデバイス」（ウェアラブル機器）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-44">
+            <div class="q-header">
+                <span class="q-num">第 44 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">自動運転車において、周辺の立体物や距離をレーザー光によって高精度に測定するセンサー技術の略称（アルファベット）を答えよ。</div>
+    
+            <div class="options-group" data-answer="LiDAR">
+                <input type="text" class="text-input" name="q44" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-44">
+                <strong>【解説】</strong> 正解は「LiDAR」（ライダー）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-45">
+            <div class="q-header">
+                <span class="q-num">第 45 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">ICTやIoTを活用して交通管理やエネルギー効率の最適化を図る、持続可能な未来都市のコンセプトを何というか答えよ。</div>
+    
+            <div class="options-group" data-answer="スマートシティ">
+                <input type="text" class="text-input" name="q45" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-45">
+                <strong>【解説】</strong> 正解は「スマートシティ」です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-46">
+            <div class="q-header">
+                <span class="q-num">第 46 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">2016年に多数の初期パスワードのままのIoT機器を感染させ、巨大なDDoS攻撃を引き起こした代表的なマルウェア・ボットネットの名称を答えよ。</div>
+    
+            <div class="options-group" data-answer="Mirai">
+                <input type="text" class="text-input" name="q46" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-46">
+                <strong>【解説】</strong> 正解は「Mirai」（ミライ）です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-47">
+            <div class="q-header">
+                <span class="q-num">第 47 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">第5世代移動通信システムの略称であるアルファベット2文字を答えよ。</div>
+    
+            <div class="options-group" data-answer="5G">
+                <input type="text" class="text-input" name="q47" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-47">
+                <strong>【解説】</strong> 正解は「5G」です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-48">
+            <div class="q-header">
+                <span class="q-num">第 48 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">省電力で長距離通信が可能な無線通信技術の総称である「LPWA」の正式名称（英語）の頭文字をとったものだが、Lは何を意味するか？（Low 〇〇〇〇）。日本語または英語で「低消費電力」を表す単語を答えよ。</div>
+    
+            <div class="options-group" data-answer="Low Power">
+                <input type="text" class="text-input" name="q48" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-48">
+                <strong>【解説】</strong> LPWAは Low Power Wide Area の略であり、「Low Power（低消費電力）」を意味します。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-49">
+            <div class="q-header">
+                <span class="q-num">第 49 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">IoTデバイスなどで広く使われる、軽量でパブリッシュ/サブスクライブ型モデルを採用した通信プロトコルの名称（アルファベット4文字）を答えよ。</div>
+    
+            <div class="options-group" data-answer="MQTT">
+                <input type="text" class="text-input" name="q49" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-49">
+                <strong>【解説】</strong> 正解は「MQTT」です。
+            </div>
+        </div>
+    
+        <div class="question-card" id="card-50">
+            <div class="q-header">
+                <span class="q-num">第 50 問</span>
+                <span class="q-type">記入式</span>
+            </div>
+            <div class="q-text">センサーが読み取る連続的な「アナログ値」を、コンピュータが処理できる離散的な値に変換する変換器の略称（アルファベット3文字）を答えよ。</div>
+    
+            <div class="options-group" data-answer="ADC">
+                <input type="text" class="text-input" name="q50" placeholder="解答を入力してください">
+            </div>
+        
+            <div class="explanation" id="exp-50">
+                <strong>【解説】</strong> 正解は「ADC」（Analog-to-Digital Converter）です。
+            </div>
+        </div>
+    
+        <div class="controls">
+            <button type="button" class="btn" onclick="gradeQuiz()">解答して採点する</button>
+        </div>
+    </form>
+</div>
+
+<div id="score-modal">
+    <div class="modal-content">
+        <h2>採点結果</h2>
+        <div class="score-display" id="final-score">0 / 50</div>
+        <p id="score-comment">お疲れ様でした！</p>
+        <button class="close-btn" onclick="closeModal()">解説を確認する</button>
+    </div>
+</div>
+
+<script>
+function gradeQuiz() {
+    let score = 0;
+    const total = 50;
+    
+    for (let i = 1; i <= total; i++) {
+        const card = document.getElementById(`card-${i}`);
+        const expDiv = document.getElementById(`exp-${i}`);
+        const group = card.querySelector('.options-group');
+        const qType = card.querySelector('.q-type').innerText;
+        
+        // Reset styles
+        card.classList.remove('result-correct', 'result-incorrect');
+        expDiv.classList.add('show');
+        
+        let isCorrect = false;
+        
+        if (qType === '4択式' || qType === '〇×') {
+            const correctIdx = parseInt(group.getAttribute('data-correct'));
+            const selected = group.querySelector(`input[name="q${i}"]:checked`);
+            if (selected && parseInt(selected.value) === correctIdx) {
+                isCorrect = true;
+            }
+        } else if (qType === '記入式') {
+            const correctAns = group.getAttribute('data-answer').trim().toLowerCase();
+            const inputVal = group.querySelector('input[type="text"]').value.trim().toLowerCase();
+            if (inputVal !== "" && (inputVal === correctAns || correctAns.includes(inputVal))) {
+                isCorrect = true;
+            }
+        }
+        
+        if (isCorrect) {
+            score++;
+            card.classList.add('result-correct');
+        } else {
+            card.classList.add('result-incorrect');
+        }
+    }
+    
+    // Show Modal
+    document.getElementById('final-score').innerText = `${score} / ${total}`;
+    let comment = "素晴らしい！完璧な理解度です！";
+    if (score < 25) {
+        comment = "もう少し復習が必要です。解説を確認しましょう。";
+    } else if (score < 40) {
+        comment = "よくできています！間違えた箇所を復習しましょう。";
+    } else if (score < 50) {
+        comment = "あと一歩で満点です！素晴らしい理解力です。";
+    }
+    document.getElementById('score-comment').innerText = comment;
+    document.getElementById('score-modal').style.display = 'flex';
+    
+    // Scroll to top
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function closeModal() {
+    document.getElementById('score-modal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
